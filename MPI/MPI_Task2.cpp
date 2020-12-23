@@ -3,7 +3,7 @@
 #include <math.h>
 #include <time.h>
 #include <iostream>
-#define MAX 1000000
+#define MAX 1000
 
 using namespace std;
 
@@ -12,7 +12,7 @@ int main(int* argc, char** argv)
 	int ProcNum, ProcRank, product, result;
 	int* vector1;
 	int* vector2;
-	double t1, t2;
+	double t1, t2, t3, t4;
 	int max_array = MAX;
 
 	vector1 = new int[max_array];
@@ -40,15 +40,13 @@ int main(int* argc, char** argv)
 		t2 = MPI_Wtime();
 		printf("Scalar product is %d\n", sum);
 		printf("Regular time is %f\n", (t2 - t1));
-		t1 = MPI_Wtime();
+		t3 = MPI_Wtime();
 	}
 
-	//Broadcasting the vectors and starting the timer
+	//Broadcasting the vectors 
 	MPI_Bcast(vector1, max_array, MPI_INT, 0, MPI_COMM_WORLD);
 	MPI_Bcast(vector2, max_array, MPI_INT, 0, MPI_COMM_WORLD);
 
-	//if (ProcRank == 0)
-	//	t1 = MPI_Wtime();
 
 	//dividing into chunks
 	int chunk_size = max_array / ProcNum;
@@ -68,9 +66,9 @@ int main(int* argc, char** argv)
 	MPI_Reduce(&proc_sum, &result, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
 
 	if (ProcRank == 0) {
-		t2 = MPI_Wtime();
+		t4 = MPI_Wtime();
 		printf("Scalar product is %d\n", result);
-		printf("Parallel time is %f\n", (t2 - t1));
+		printf("Parallel time is %f\n", (t4 - t3));
 	}
 
 
